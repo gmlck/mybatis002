@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gml.learn.mybatis002.mapper.UserMapper">
+    <!--高级查询（用户ID，相似用户名，性别，用户ID组合）-->
+    <sql id="query_user_where">
+        <if test="userCustom.id != null and userCustom.id !=''">
+            and id = #{userCustom.id}
+        </if>
+        <if test="userCustom.username != null and userCustom.username !=''">
+            and username like #{userCustom.username}
+        </if>
+        <if test="userCustom.sex != null and userCustom.sex !=''">
+            and sex = #{userCustom.sex}
+        </if>
+        <if test="ids != null ">
+            <foreach collection="ids" item="item" open="and (" close=")" separator="or">
+                id=#{item}
+            </foreach>
+        </if>
+    </sql>
+
+    <select id="findUserById" parameterType="int" resultType="com.gml.learn.mybatis002.po.User">
+        SELECT * from user where id = #{id}
+    </select>
+    <select id="findUser" parameterType="com.gml.learn.mybatis002.vo.UserQueryVo" resultType="com.gml.learn.mybatis002.vo.UserCustom">
+        select * from user
+       <where>
+            <include refid="query_user_where"/>
+        </where>
+    </select>
+    <select id="findUserCount" parameterType="com.gml.learn.mybatis002.vo.UserQueryVo" resultType="java.lang.Integer">
+        select count(*) from user
+        <where>
+            <include refid="query_user_where"/>
+        </where>
+    </select>
+
+
+</mapper>
